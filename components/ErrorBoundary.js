@@ -2,7 +2,7 @@ import React from 'react'
 import FallbackComponent from "./FallbackComponent";
 
 export default class ErrorBoundary extends React.Component {
-    state = { hasError: false }
+    state = { hasError: false };
 
     static getDerivedStateFromError (error) {
         return { hasError: true }
