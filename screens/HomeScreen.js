@@ -6,14 +6,12 @@ import ErrorBoundary from "../components/ErrorBoundary";
 
 const calculateAge = (dob1) => {
     const today = new Date();
-    const birthDate = new Date(dob1);  // create a date object directly from `dob1` argument
+    const birthDate = new Date(dob1);
     let age_now = today.getFullYear() - birthDate.getFullYear();
     const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate()))
-    {
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
         age_now--;
     }
-    console.log(age_now);
     return age_now;
 };
 
@@ -80,7 +78,7 @@ export default function HomeScreen() {
                     renderItem={({item}) => {
                         return (
                             <ListItem
-                                title={`#${item.id} - ${item.first_name} ${item.last_name} - ${calculateAge(item.dob)} - ${item.gender}`}
+                                title={`#${item.id} - ${item.first_name} ${item.last_name} - ${calculateAge(item.dob)} years old - ${item.gender}`}
                                 subtitle={item.gender}
                                 bottomDivider
                             />
