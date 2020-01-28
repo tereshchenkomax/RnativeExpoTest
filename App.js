@@ -16,7 +16,7 @@ export default function App() {
         try {
             let url = 'https://gorest.co.in/public-api/users?_format=json&access-token=xAj8EbuOqdkAvS_0kSRv49F0YrRO8skgwSh4';
             let users = await axios.get(url);
-            return await users
+            return users
         } catch (error) {
             throw error;
         }
