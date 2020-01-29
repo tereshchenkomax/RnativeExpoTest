@@ -49,15 +49,21 @@ export default function HomeScreen() {
     }, []);
 
     const searchFilterFunction = text => {
-        const newData = holderData.filter(item => {
-            const itemFNData = `${item.first_name.toUpperCase()}`;
-            const itemLNData = `${item.last_name.toUpperCase()}`;
-            const textData = text.toUpperCase();
+        setTimeout(()=>{
+            if (text.length >= 2) {
+                const newData = holderData.filter(item => {
+                    const itemFNData = `${item.first_name.toUpperCase()}`;
+                    const itemLNData = `${item.last_name.toUpperCase()}`;
+                    const textData = text.toUpperCase();
 
-            return (itemFNData.indexOf(textData) > -1) || (itemLNData.indexOf(textData) > -1)
-        });
+                    return (itemFNData.indexOf(textData) > -1) || (itemLNData.indexOf(textData) > -1)
+                });
+                setData(newData);
+            } else {
+                setData(holderData);
+            }
+        }, 400);
         setValue(text);
-        setData(newData)
     };
 
     if (loading) {
