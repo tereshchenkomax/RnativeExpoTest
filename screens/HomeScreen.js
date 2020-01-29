@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, StyleSheet, View} from 'react-native';
-import {ListItem, SearchBar} from 'react-native-elements';
+import {ActivityIndicator, FlatList, StyleSheet, View, TextInput, Picker, Button} from 'react-native';
+import {ListItem, SearchBar, Input} from 'react-native-elements';
 import axios from 'axios';
+import moment from 'moment';
 import ErrorBoundary from "../components/ErrorBoundary";
 
 const calculateAge = (dob1) => {
@@ -19,7 +20,9 @@ export default function HomeScreen() {
 
     const [data, setData] = useState([]);
     const [holderData, setHolderData] = useState([]);
-    const [value, setValue] = useState('');
+    const [searchValue, setSearchValue] = useState('');
+    const [gender, setGender] = useState('both');
+
     const [error, setError] = useState(false);
     const [loading, isLoading] = useState(false);
 
@@ -49,7 +52,7 @@ export default function HomeScreen() {
     }, []);
 
     const searchFilterFunction = text => {
-        setTimeout(()=>{
+        setTimeout(() => {
             if (text.length >= 2) {
                 const newData = holderData.filter(item => {
                     const itemFNData = `${item.first_name.toUpperCase()}`;
@@ -63,7 +66,12 @@ export default function HomeScreen() {
                 setData(holderData);
             }
         }, 400);
-        setValue(text);
+        setSearchValue(text);
+    };
+
+    const genderFilterFunction = gender => {
+        console.log(gender);
+        setGender(gender)
     };
 
     if (loading) {
@@ -79,12 +87,36 @@ export default function HomeScreen() {
     return (
         <ErrorBoundary>
             <View style={styles.container}>
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between'
+                }}>
+                    <Picker
+                        selectedValue={gender}
+                        style={{height: 20, width: 100}}
+                        onValueChange={genderFilterFunction}
+                    >
+                        <Picker.Item label="Both" value="both"/>
+                        <Picker.Item label="Male" value="male"/>
+                        <Picker.Item label="Female" value="female"/>
+                    </Picker>
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-evenly'
+                    }}>
+                        <TextInput keyboardType={'numeric'} placeholder={'test'}/>
+                        <TextInput keyboardType={'numeric'} placeholder={'test'}/>
+                        <Button title={'Reset'}/>
+                    </View>
+
+                </View>
                 <FlatList
+                    style={{marginTop: 100}}
                     data={data}
                     renderItem={({item}) => {
                         return (
                             <ListItem
-                                title={`#${item.id} - ${item.first_name} ${item.last_name} - ${calculateAge(item.dob)} years old - ${item.gender}`}
+                                title={`#${item.id} - ${item.first_name} ${item.last_name} - ${moment().diff(item.dob, 'years')} years old - ${item.gender}`}
                                 subtitle={item.gender}
                                 bottomDivider
                             />
@@ -97,11 +129,10 @@ export default function HomeScreen() {
                         round
                         onChangeText={text => searchFilterFunction(text)}
                         autoCorrect={false}
-                        value={value}
+                        value={searchValue}
                     />}
                 />
             </View>
-
         </ErrorBoundary>
     );
 }
