@@ -1,20 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, StyleSheet, View, TextInput, Picker, Button} from 'react-native';
+import {ActivityIndicator, FlatList, StyleSheet, View, TextInput, Picker, Button, Keyboard, Text} from 'react-native';
 import {ListItem, SearchBar, Input} from 'react-native-elements';
 import axios from 'axios';
 import moment from 'moment';
 import ErrorBoundary from "../components/ErrorBoundary";
-
-const calculateAge = (dob1) => {
-    const today = new Date();
-    const birthDate = new Date(dob1);
-    let age_now = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age_now--;
-    }
-    return age_now;
-};
 
 export default function HomeScreen() {
 
@@ -22,6 +11,10 @@ export default function HomeScreen() {
     const [holderData, setHolderData] = useState([]);
     const [searchValue, setSearchValue] = useState('');
     const [gender, setGender] = useState('both');
+    const [age, setAge] = useState({
+        from: '0',
+        to: '99'
+    });
 
     const [error, setError] = useState(false);
     const [loading, isLoading] = useState(false);
@@ -31,7 +24,7 @@ export default function HomeScreen() {
             let url = 'https://gorest.co.in/public-api/users?_format=json&access-token=xAj8EbuOqdkAvS_0kSRv49F0YrRO8skgwSh4';
             return await axios.get(url)
         } catch (error) {
-            throw error;
+            setError(error);
         }
     };
 
@@ -51,27 +44,59 @@ export default function HomeScreen() {
 
     }, []);
 
+    const emulateServerDelay = (handler) => setTimeout(handler, 400);
+
     const searchFilterFunction = text => {
-        setTimeout(() => {
+        emulateServerDelay(() => {
             if (text.length >= 2) {
                 const newData = holderData.filter(item => {
                     const itemFNData = `${item.first_name.toUpperCase()}`;
                     const itemLNData = `${item.last_name.toUpperCase()}`;
                     const textData = text.toUpperCase();
-
                     return (itemFNData.indexOf(textData) > -1) || (itemLNData.indexOf(textData) > -1)
                 });
                 setData(newData);
             } else {
                 setData(holderData);
             }
-        }, 400);
+        });
         setSearchValue(text);
     };
 
     const genderFilterFunction = gender => {
-        console.log(gender);
+        emulateServerDelay(() => {
+            if (gender !== 'both') {
+                const newData = holderData.filter(item => (
+                    item.gender === gender
+                ));
+                setData(newData)
+            } else {
+                setData(holderData)
+            }
+        });
         setGender(gender)
+    };
+
+    const ageFilterFunction = (e) => {
+        if (e.nativeEvent.text !== '') {
+            const newData = holderData.filter(item => (
+                moment().diff(item.dob, 'years') >= e.nativeEvent.text
+            ))
+            setData(newData)
+        } else {
+            setData(holderData)
+        }
+        setAge({
+            from: e.nativeEvent.text,
+            to: age.to
+        })
+    }
+
+    const handleReset = () => {
+        setGender('both');
+        setData(holderData);
+        setSearchValue('');
+        Keyboard.dismiss();
     };
 
     if (loading) {
@@ -83,32 +108,32 @@ export default function HomeScreen() {
             </ErrorBoundary>
         )
     }
-
     return (
         <ErrorBoundary>
             <View style={styles.container}>
                 <View style={{
                     flexDirection: 'row',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-evenly',
+                    alignContent: 'center'
                 }}>
                     <Picker
                         selectedValue={gender}
-                        style={{height: 20, width: 100}}
+                        style={{height: 15, width: 100}}
                         onValueChange={genderFilterFunction}
                     >
-                        <Picker.Item label="Both" value="both"/>
                         <Picker.Item label="Male" value="male"/>
                         <Picker.Item label="Female" value="female"/>
+                        <Picker.Item label="Both" value="both"/>
                     </Picker>
-                    <View style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-evenly'
-                    }}>
-                        <TextInput keyboardType={'numeric'} placeholder={'test'}/>
-                        <TextInput keyboardType={'numeric'} placeholder={'test'}/>
-                        <Button title={'Reset'}/>
-                    </View>
 
+                    <Text style={{fontSize: 20, paddingTop: 7}}>Age</Text>
+                    <TextInput keyboardType={'numeric'} placeholder={'From'} onChange={ageFilterFunction}
+                               maxLength={2} value={age.from}
+                               style={{width: 50, fontSize: 20}}/>
+                    <TextInput keyboardType={'numeric'} placeholder={'To'} onChange={ageFilterFunction}
+                               maxLength={2} value={age.to}
+                               style={{width: 50, fontSize: 20}}/>
+                    <Button title={'Reset'} onPress={handleReset}/>
                 </View>
                 <FlatList
                     style={{marginTop: 100}}
@@ -139,8 +164,6 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        // alignItems: 'center',
-        // justifyContent: 'center',
+        flex: 1
     },
 });
