@@ -77,25 +77,38 @@ export default function HomeScreen() {
         setGender(gender)
     };
 
-    const ageFilterFunction = (e) => {
+    const ageFilterFunction = (e, index) => {
         if (e.nativeEvent.text !== '') {
-            const newData = holderData.filter(item => (
-                moment().diff(item.dob, 'years') >= e.nativeEvent.text
-            ))
+            const newData = holderData.filter(item => {
+                const dob = moment().diff(item.dob, 'years');
+                if (index === 'from') {
+                    return dob >= e.nativeEvent.text && dob <= age.to
+                }
+                return dob <= e.nativeEvent.text && dob >= age.from
+            });
             setData(newData)
         } else {
             setData(holderData)
         }
-        setAge({
-            from: e.nativeEvent.text,
-            to: age.to
-        })
-    }
+        index === 'from' ?
+            setAge({
+                from: e.nativeEvent.text,
+                to: age.to
+            }) :
+            setAge({
+                from: age.from,
+                to: e.nativeEvent.text
+            })
+    };
 
     const handleReset = () => {
         setGender('both');
         setData(holderData);
         setSearchValue('');
+        setAge({
+            from: '0',
+            to: '99'
+        });
         Keyboard.dismiss();
     };
 
@@ -126,13 +139,15 @@ export default function HomeScreen() {
                         <Picker.Item label="Both" value="both"/>
                     </Picker>
 
-                    <Text style={{fontSize: 20, paddingTop: 7}}>Age</Text>
-                    <TextInput keyboardType={'numeric'} placeholder={'From'} onChange={ageFilterFunction}
-                               maxLength={2} value={age.from}
-                               style={{width: 50, fontSize: 20}}/>
-                    <TextInput keyboardType={'numeric'} placeholder={'To'} onChange={ageFilterFunction}
-                               maxLength={2} value={age.to}
-                               style={{width: 50, fontSize: 20}}/>
+                    <Text style={{fontSize: 20, paddingTop: 7}}>Age From</Text>
+                    <TextInput keyboardType={'numeric'} placeholder={'From'}
+                               onChange={e => ageFilterFunction(e, 'from')}
+                               maxLength={2} value={age.from} nativeID={'from'}
+                               style={{width: 50, fontSize: 20, color: 'blue'}}/>
+                    <Text style={{fontSize: 20, paddingTop: 7}}>To</Text>
+                    <TextInput keyboardType={'numeric'} placeholder={'To'} onChange={e => ageFilterFunction(e, 'to')}
+                               maxLength={2} value={age.to} nativeID={'to'}
+                               style={{width: 50, fontSize: 20, color: 'blue'}}/>
                     <Button title={'Reset'} onPress={handleReset}/>
                 </View>
                 <FlatList
