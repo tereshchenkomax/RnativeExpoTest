@@ -77,27 +77,30 @@ export default function HomeScreen() {
         setGender(gender)
     };
 
-    const ageFilterFunction = (e, index) => {
-        if (e.nativeEvent.text !== '') {
-            const newData = holderData.filter(item => {
-                const dob = moment().diff(item.dob, 'years');
-                if (index === 'from') {
-                    return dob >= e.nativeEvent.text && dob <= age.to
-                }
-                return dob <= e.nativeEvent.text && dob >= age.from
-            });
-            setData(newData)
-        } else {
-            setData(holderData)
-        }
+    const ageFilterFunction = (text, index) => {
+        emulateServerDelay(()=>{
+            if (text !== '') {
+                const newData = holderData.filter(item => {
+                    const dob = moment().diff(item.dob, 'years');
+                    if (index === 'from') {
+                        return dob >= text && dob <= age.to
+                    }
+                    return dob <= text && dob >= age.from
+                });
+                setData(newData)
+            } else {
+                setData(holderData)
+            }
+        });
+
         index === 'from' ?
             setAge({
-                from: e.nativeEvent.text,
+                from: text,
                 to: age.to
             }) :
             setAge({
                 from: age.from,
-                to: e.nativeEvent.text
+                to: text
             })
     };
 
@@ -131,7 +134,7 @@ export default function HomeScreen() {
                 }}>
                     <Picker
                         selectedValue={gender}
-                        style={{height: 15, width: 100}}
+                        style={styles.picker}
                         onValueChange={genderFilterFunction}
                     >
                         <Picker.Item label="Male" value="male"/>
@@ -141,13 +144,14 @@ export default function HomeScreen() {
 
                     <Text style={{fontSize: 20, paddingTop: 7}}>Age From</Text>
                     <TextInput keyboardType={'numeric'} placeholder={'From'}
-                               onChange={e => ageFilterFunction(e, 'from')}
-                               maxLength={2} value={age.from} nativeID={'from'}
-                               style={{width: 50, fontSize: 20, color: 'blue'}}/>
+                               onChangeText={e => ageFilterFunction(e, 'from')}
+                               maxLength={2} value={age.from}
+                               style={styles.textInput}/>
                     <Text style={{fontSize: 20, paddingTop: 7}}>To</Text>
-                    <TextInput keyboardType={'numeric'} placeholder={'To'} onChange={e => ageFilterFunction(e, 'to')}
-                               maxLength={2} value={age.to} nativeID={'to'}
-                               style={{width: 50, fontSize: 20, color: 'blue'}}/>
+                    <TextInput keyboardType={'numeric'} placeholder={'To'}
+                               onChangeText={e => ageFilterFunction(e, 'to')}
+                               maxLength={2} value={age.to}
+                               style={styles.textInput}/>
                     <Button title={'Reset'} onPress={handleReset}/>
                 </View>
                 <FlatList
@@ -158,6 +162,7 @@ export default function HomeScreen() {
                             <ListItem
                                 title={`#${item.id} - ${item.first_name} ${item.last_name} - ${moment().diff(item.dob, 'years')} years old - ${item.gender}`}
                                 subtitle={item.gender}
+                                titleStyle={item.status === 'inactive' ? styles.listItemInactive : null}
                                 bottomDivider
                             />
                         )
@@ -181,4 +186,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1
     },
+    picker: {height: 15, width: 100},
+    textInput: {width: 50, fontSize: 20, color: 'blue'},
+    listItemInactive: {color: 'gray'}
 });
