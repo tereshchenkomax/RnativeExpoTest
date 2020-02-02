@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, StyleSheet, View, TextInput, Picker, Button, Keyboard, Text} from 'react-native';
-import {ListItem, SearchBar, Input} from 'react-native-elements';
+import {ActivityIndicator, FlatList, StyleSheet, View, TextInput, Button, Keyboard, Text} from 'react-native';
+import {ListItem, SearchBar, Overlay} from 'react-native-elements';
 import axios from 'axios';
 import moment from 'moment';
 import ErrorBoundary from "../components/ErrorBoundary";
+import GenderPicker from "../components/GenderPicker";
+import OverlayComponent from "../components/OverlayComponent";
 
 export default function HomeScreen() {
 
@@ -14,6 +16,10 @@ export default function HomeScreen() {
     const [age, setAge] = useState({
         from: '0',
         to: '99'
+    });
+    const [overlay, setVisibleOverlay] = useState({
+        visible: false,
+        id: ''
     });
 
     const [error, setError] = useState(false);
@@ -26,6 +32,13 @@ export default function HomeScreen() {
         } catch (error) {
             setError(error);
         }
+    };
+
+    const overlayHandler = (id) => {
+        setVisibleOverlay({
+            visible: true,
+            id: id
+        });
     };
 
     useEffect(() => {
@@ -63,6 +76,14 @@ export default function HomeScreen() {
         setSearchValue(text);
     };
 
+    const filterByID = id => {
+        const newData = holderData.filter(item => (
+            item.id !== id
+        ));
+        setHolderData(newData);
+        setData(newData);
+    };
+
     const genderFilterFunction = gender => {
         emulateServerDelay(() => {
             if (gender !== 'both') {
@@ -78,7 +99,7 @@ export default function HomeScreen() {
     };
 
     const ageFilterFunction = (text, index) => {
-        emulateServerDelay(()=>{
+        emulateServerDelay(() => {
             if (text !== '') {
                 const newData = holderData.filter(item => {
                     const dob = moment().diff(item.dob, 'years');
@@ -114,7 +135,6 @@ export default function HomeScreen() {
         });
         Keyboard.dismiss();
     };
-
     if (loading) {
         return (
             <ErrorBoundary>
@@ -123,31 +143,21 @@ export default function HomeScreen() {
                 </View>
             </ErrorBoundary>
         )
+
     }
+
     return (
         <ErrorBoundary>
             <View style={styles.container}>
-                <View style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-evenly',
-                    alignContent: 'center'
-                }}>
-                    <Picker
-                        selectedValue={gender}
-                        style={styles.picker}
-                        onValueChange={genderFilterFunction}
-                    >
-                        <Picker.Item label="Male" value="male"/>
-                        <Picker.Item label="Female" value="female"/>
-                        <Picker.Item label="Both" value="both"/>
-                    </Picker>
-
-                    <Text style={{fontSize: 20, paddingTop: 7}}>Age From</Text>
+                <OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={filterByID}/>
+                <View style={styles.filterStyles}>
+                    <GenderPicker gender={gender} genderFilterFunction={genderFilterFunction} />
+                    <Text style={styles.text}>Age From</Text>
                     <TextInput keyboardType={'numeric'} placeholder={'From'}
                                onChangeText={e => ageFilterFunction(e, 'from')}
                                maxLength={2} value={age.from}
                                style={styles.textInput}/>
-                    <Text style={{fontSize: 20, paddingTop: 7}}>To</Text>
+                    <Text style={styles.text}>To</Text>
                     <TextInput keyboardType={'numeric'} placeholder={'To'}
                                onChangeText={e => ageFilterFunction(e, 'to')}
                                maxLength={2} value={age.to}
@@ -157,16 +167,14 @@ export default function HomeScreen() {
                 <FlatList
                     style={{marginTop: 100}}
                     data={data}
-                    renderItem={({item}) => {
-                        return (
-                            <ListItem
-                                title={`#${item.id} - ${item.first_name} ${item.last_name} - ${moment().diff(item.dob, 'years')} years old - ${item.gender}`}
-                                subtitle={item.gender}
-                                titleStyle={item.status === 'inactive' ? styles.listItemInactive : null}
-                                bottomDivider
-                            />
-                        )
-                    }}
+                    renderItem={({item}) => (
+                        <ListItem
+                            title={`#${item.id} - ${item.first_name} ${item.last_name} - ${moment().diff(item.dob, 'years')} years old - ${item.gender}`}
+                            onPress={() => overlayHandler(item.id)}
+                            titleStyle={item.status === 'inactive' ? styles.listItemInactive : null}
+                            bottomDivider
+                        />
+                    )}
                     keyExtractor={item => item.id}
                     ListHeaderComponent={<SearchBar
                         placeholder="Type Here..."
@@ -186,7 +194,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1
     },
+    text: {fontSize: 20, paddingTop: 7},
     picker: {height: 15, width: 100},
     textInput: {width: 50, fontSize: 20, color: 'blue'},
-    listItemInactive: {color: 'gray'}
+    listItemInactive: {color: 'gray'},
+    filterStyles: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignContent: 'center'
+    },
 });
