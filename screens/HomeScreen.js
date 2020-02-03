@@ -59,7 +59,7 @@ export default function HomeScreen() {
 
     const emulateServerDelay = (handler) => setTimeout(handler, 400);
 
-    const searchFilterFunction = text => {
+    const setSearchFilter = text => {
         emulateServerDelay(() => {
             if (text.length >= 2) {
                 const newData = holderData.filter(item => {
@@ -76,7 +76,7 @@ export default function HomeScreen() {
         setSearchValue(text);
     };
 
-    const filterByID = id => {
+    const setFilterByID = id => {
         const newData = holderData.filter(item => (
             item.id !== id
         ));
@@ -84,7 +84,7 @@ export default function HomeScreen() {
         setData(newData);
     };
 
-    const genderFilterFunction = gender => {
+    const setGenderFilter = gender => {
         emulateServerDelay(() => {
             if (gender !== 'both') {
                 const newData = holderData.filter(item => (
@@ -98,7 +98,7 @@ export default function HomeScreen() {
         setGender(gender)
     };
 
-    const ageFilterFunction = (text, index) => {
+    const setAgeFilter = (text, index) => {
         emulateServerDelay(() => {
             if (text !== '') {
                 const newData = holderData.filter(item => {
@@ -149,17 +149,17 @@ export default function HomeScreen() {
     return (
         <ErrorBoundary>
             <View style={styles.container}>
-                <OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={filterByID}/>
+                <OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={setFilterByID}/>
                 <View style={styles.filterStyles}>
-                    <GenderPicker gender={gender} genderFilterFunction={genderFilterFunction}/>
+                    <GenderPicker gender={gender} genderFilterFunction={setGenderFilter}/>
                     <Text style={styles.text}>Age From</Text>
                     <TextInput keyboardType={'numeric'} placeholder={'From'}
-                               onChangeText={e => ageFilterFunction(e, 'from')}
+                               onChangeText={text => setAgeFilter(text, 'from')}
                                maxLength={2} value={age.from}
                                style={styles.textInput}/>
                     <Text style={styles.text}>To</Text>
                     <TextInput keyboardType={'numeric'} placeholder={'To'}
-                               onChangeText={e => ageFilterFunction(e, 'to')}
+                               onChangeText={text => setAgeFilter(text, 'to')}
                                maxLength={2} value={age.to}
                                style={styles.textInput}/>
                     <Button title={'Reset'} onPress={handleReset}/>
@@ -180,7 +180,7 @@ export default function HomeScreen() {
                         placeholder="Type Here..."
                         lightTheme
                         round
-                        onChangeText={text => searchFilterFunction(text)}
+                        onChangeText={text => setSearchFilter(text)}
                         autoCorrect={false}
                         value={searchValue}
                     />}
