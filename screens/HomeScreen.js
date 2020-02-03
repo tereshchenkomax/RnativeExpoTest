@@ -51,7 +51,7 @@ export default function HomeScreen() {
             })
             .catch(err => {
                 setError(err);
-                console.log(err)
+                console.log(error);
                 isLoading(false);
             })
 
@@ -151,7 +151,7 @@ export default function HomeScreen() {
             <View style={styles.container}>
                 <OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={filterByID}/>
                 <View style={styles.filterStyles}>
-                    <GenderPicker gender={gender} genderFilterFunction={genderFilterFunction} />
+                    <GenderPicker gender={gender} genderFilterFunction={genderFilterFunction}/>
                     <Text style={styles.text}>Age From</Text>
                     <TextInput keyboardType={'numeric'} placeholder={'From'}
                                onChangeText={e => ageFilterFunction(e, 'from')}
@@ -194,10 +194,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1
     },
-    text: {fontSize: 20, paddingTop: 7},
-    picker: {height: 15, width: 100},
-    textInput: {width: 50, fontSize: 20, color: 'blue'},
-    listItemInactive: {color: 'gray'},
+    text: {
+        fontSize: 20,
+        paddingTop: 7
+    },
+    picker: {
+        height: 15,
+        width: 100
+    },
+    textInput: {
+        width: 50,
+        fontSize: 20,
+        color: 'blue',
+        borderWidth: 1,
+        borderColor: 'gray',
+        textAlign: 'center'
+    },
+    listItemInactive: {
+        color: 'gray'
+    },
     filterStyles: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',

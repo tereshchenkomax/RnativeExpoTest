@@ -16,7 +16,7 @@ function OverlayComponent({overlay, setVisibleOverlay, filterById}) {
         !invitationSent ? (
         <Overlay isVisible={overlay.visible}
                  overlayStyle={styles.overlay}>
-            <Text>Вы действительно хотите пригласить на свидание пользовsателя с id = {overlay.id}?</Text>
+            <Text>Вы действительно хотите пригласить на свидание пользователя с id = {overlay.id}?</Text>
             <Button onPress={() => setInvitation(true)} title={'ДА'}/>
             <Button onPress={() => setVisibleOverlay({visible: false})} title={'НЕТ'}/>
         </Overlay>
