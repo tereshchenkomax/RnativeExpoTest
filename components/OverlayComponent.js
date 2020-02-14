@@ -3,7 +3,7 @@ import {Button, Text, StyleSheet} from "react-native";
 import {Overlay} from "react-native-elements";
 
 function OverlayComponent({overlay, setVisibleOverlay, filterById}) {
-
+    console.log('overlay')
     const [invitationSent, setInvitation] = useState(false);
 
     const handleOKpress = () => {
