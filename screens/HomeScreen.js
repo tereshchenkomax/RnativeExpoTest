@@ -7,6 +7,12 @@ import ErrorBoundary from "../components/ErrorBoundary";
 import GenderPicker from "../components/GenderPicker";
 import OverlayComponent from "../components/OverlayComponent";
 
+const pickeItems = [
+    {label: 'male', value: 'male', key: 1},
+    {label: 'female', value: 'female', key: 2},
+    {label: 'both', value: 'both', key: 3},
+]
+
 export default function HomeScreen(deps) {
 
     const [data, setData] = useState([]);
@@ -96,8 +102,16 @@ export default function HomeScreen(deps) {
     }, [gender])
 
     const setGenderFilter = gender => {
-        setGender(gender);
-        filterByGender()
+        console.log(gender)
+        setGender(gender => gender);
+        if (gender !== 'both') {
+            const newData = holderData.filter(item => (
+                item.gender === gender
+            ));
+            setData(newData)
+        } else {
+            setData(holderData)
+        }
     }
 
 const setAgeFilter = (text, index) => {
@@ -166,7 +180,7 @@ return (
         <View style={styles.container}>
             <OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={setFilterByID}/>
             <View style={styles.filterStyles}>
-                <GenderPicker gender={gender} genderFilterFunction={setGenderFilter}/>
+                <GenderPicker currentItem={gender} pickeItems={pickeItems} genderFilterFunction={setGenderFilter}/>
                 <Text style={styles.text}>Age From</Text>
                 <TextInput keyboardType={'numeric'} placeholder={'From'}
                            onChangeText={text => setAgeFilter(text, 'from')}

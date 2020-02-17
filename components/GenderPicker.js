@@ -1,23 +1,25 @@
 import React from 'react';
 import {Picker, StyleSheet} from "react-native";
 
-const GenderPicker = ({gender, genderFilterFunction}) => {
-    console.log('genderpicker')
+const GenderPicker = ({currentItem, pickeItems, genderFilterFunction}) => {
+    console.log('genderpicker rendered')
     return (
         <Picker
-            selectedValue={gender}
+            selectedValue={currentItem}
             style={styles.picker}
             onValueChange={genderFilterFunction}
         >
-            <Picker.Item label="Male" value="male"/>
-            <Picker.Item label="Female" value="female"/>
-            <Picker.Item label="Both" value="both"/>
+            {pickeItems && pickeItems[0].value && pickeItems.map(item => {
+                return (
+                    <Picker.Item label={item.label} value={item.value} key={item.key}/>
+                )
+            })}
         </Picker>
     );
 };
 
 const styles = StyleSheet.create({
-    picker: {height: 15, width: 100}
+    picker: {height: 40, width: 100}
 });
 
 export default GenderPicker;
