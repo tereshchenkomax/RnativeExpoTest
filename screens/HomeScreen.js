@@ -10,19 +10,21 @@ import OverlayComponent from "../components/OverlayComponent";
 const pickeItems = [
     {label: 'male', value: 'male', key: 1},
     {label: 'female', value: 'female', key: 2},
-    {label: 'both', value: 'both', key: 3},
+    {label: 'both', value: '', key: 3},
 ]
 
 export default function HomeScreen(deps) {
 
-    const [data, setData] = useState([]);
-    const [holderData, setHolderData] = useState([]);
+    const [initialData, setinitialData] = useState([]);
+    const [sortedData, setSortedData] = useState([]);
+
     const [searchValue, setSearchValue] = useState('');
     const [gender, setGender] = useState('both');
     const [age, setAge] = useState({
         from: '0',
         to: '99'
     });
+
     const [overlay, setVisibleOverlay] = useState({
         visible: false,
         id: ''
@@ -52,8 +54,8 @@ export default function HomeScreen(deps) {
         fetchData()
             .then(({data}) => {
                 isLoading(false);
-                setData(data.result);
-                setHolderData(data.result);
+                setSortedData(data.result);
+                setinitialData(data.result);
             })
             .catch(err => {
                 setError(err);
@@ -63,70 +65,67 @@ export default function HomeScreen(deps) {
 
     }, []);
 
+    useEffect(() => {
+        const searchRegex = searchValue && new RegExp(`${searchValue}`, "gi");
+        const result = initialData.filter(
+            person =>
+                (!searchRegex || searchRegex.test(person.first_name) || searchRegex.test(person.last_name)) &&
+                (!gender || person.gender === gender)
+        );
+        setSortedData(result);
+    }, [searchValue, gender, age]);
+
     const emulateServerDelayWithMemo = (handler, deps) => useCallback(() => setTimeout(handler, 400), [...deps]);
 
     const setSearchFilter = (text) => {
         if (text.length >= 2) {
-            const newData = holderData.filter(item => {
+            const newData = initialData.filter(item => {
                 const itemFNData = `${item.first_name.toUpperCase()}`;
                 const itemLNData = `${item.last_name.toUpperCase()}`;
                 const textData = text.toUpperCase();
                 return (itemFNData.indexOf(textData) > -1) || (itemLNData.indexOf(textData) > -1)
             });
-            setData(newData);
+            setSortedData(newData);
         } else {
-            setData(holderData);
+            setSortedData(initialData);
         }
         setSearchValue(text);
     };
 
-
     const setFilterByID = id => {
-        const newData = holderData.filter(item => (
+        const newData = initialData.filter(item => (
             item.id !== id
         ));
-        setHolderData(newData);
-        setData(newData);
+        setinitialData(newData);
+        setSortedData(newData);
     };
-
-    const filterByGender = emulateServerDelayWithMemo(() => {
-        console.log('gender', gender)
-        if (gender !== 'both') {
-            const newData = holderData.filter(item => (
-                item.gender === gender
-            ));
-            setData(newData)
-        } else {
-            setData(holderData)
-        }
-    }, [gender])
 
     const setGenderFilter = gender => {
         console.log(gender)
-        setGender(gender => gender);
-        if (gender !== 'both') {
-            const newData = holderData.filter(item => (
-                item.gender === gender
-            ));
-            setData(newData)
-        } else {
-            setData(holderData)
-        }
+        setGender(gender);
+        // if (gender !== 'both') {
+        //     const newData = initialData.filter(item => (
+        //         item.gender === gender
+        //     ));
+        //     setSortedData(newData)
+        // } else {
+        //     setSortedData(initialData)
+        // }
     }
 
 const setAgeFilter = (text, index) => {
     emulateServerDelayWithMemo(() => {
         if (text !== '') {
-            const newData = holderData.filter(item => {
+            const newData = initialData.filter(item => {
                 const dob = moment().diff(item.dob, 'years');
                 if (index === 'from') {
                     return dob >= text && dob <= age.to
                 }
                 return dob <= text && dob >= age.from
             });
-            setData(newData)
+            setSortedData(newData)
         } else {
-            setData(holderData)
+            setSortedData(initialData)
         }
     });
 
@@ -143,7 +142,7 @@ const setAgeFilter = (text, index) => {
 
 const handleReset = () => {
     setGender('both');
-    setData(holderData);
+    setSortedData(initialData);
     setSearchValue('');
     setAge({
         from: '0',
@@ -195,7 +194,7 @@ return (
             </View>
             <FlatList
                 style={styles.list}
-                data={data}
+                data={sortedData}
                 renderItem={renderItems}
                 keyExtractor={item => item.id}
                 ListHeaderComponent={<SearchBar

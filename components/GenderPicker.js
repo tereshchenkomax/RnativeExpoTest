@@ -2,7 +2,6 @@ import React from 'react';
 import {Picker, StyleSheet} from "react-native";
 
 const GenderPicker = ({currentItem, pickeItems, genderFilterFunction}) => {
-    console.log('genderpicker rendered')
     return (
         <Picker
             selectedValue={currentItem}
