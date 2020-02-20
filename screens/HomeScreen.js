@@ -66,11 +66,15 @@ export default function HomeScreen(deps) {
     }, []);
 
     useEffect(() => {
+        console.log(age.to)
         const searchRegex = searchValue && new RegExp(`${searchValue}`, "gi");
         const result = initialData.filter(
-            person =>
-                (!searchRegex || searchRegex.test(person.first_name) || searchRegex.test(person.last_name)) &&
-                (!gender || person.gender === gender)
+            person => {
+                console.log(moment().diff(person.dob, 'years'))
+                return (!searchRegex || searchRegex.test(person.first_name) || searchRegex.test(person.last_name)) &&
+                (!gender || person.gender === gender) &&
+                // (age.from <= moment().diff(person.dob, 'years')) &&
+                (age.to >= moment().diff(person.dob, 'years'))}
         );
         setSortedData(result);
     }, [searchValue, gender, age]);
@@ -113,102 +117,102 @@ export default function HomeScreen(deps) {
         // }
     }
 
-const setAgeFilter = (text, index) => {
-    emulateServerDelayWithMemo(() => {
-        if (text !== '') {
-            const newData = initialData.filter(item => {
-                const dob = moment().diff(item.dob, 'years');
-                if (index === 'from') {
-                    return dob >= text && dob <= age.to
-                }
-                return dob <= text && dob >= age.from
-            });
-            setSortedData(newData)
-        } else {
-            setSortedData(initialData)
-        }
-    });
+    const setAgeFilter = (text, index) => {
+        // console.log(text, index)
+        // if (text !== '') {
+        //     const newData = initialData.filter(item => {
+        //         const dob = moment().diff(item.dob, 'years');
+        //         if (index === 'from') {
+        //             return dob >= text && dob <= age.to
+        //         }
+        //         return dob <= text && dob >= age.from
+        //     });
+        //     setSortedData(newData)
+        // } else {
+        //     setSortedData(initialData)
+        // }
+        // ;
 
-    index === 'from' ?
+        index === 'from' ?
+            setAge({
+                from: text,
+                to: age.to
+            }) :
+            setAge({
+                from: age.from,
+                to: text
+            })
+    };
+
+    const handleReset = () => {
+        setGender('both');
+        setSortedData(initialData);
+        setSearchValue('');
         setAge({
-            from: text,
-            to: age.to
-        }) :
-        setAge({
-            from: age.from,
-            to: text
-        })
-};
+            from: '0',
+            to: '99'
+        });
+        Keyboard.dismiss();
+    };
 
-const handleReset = () => {
-    setGender('both');
-    setSortedData(initialData);
-    setSearchValue('');
-    setAge({
-        from: '0',
-        to: '99'
-    });
-    Keyboard.dismiss();
-};
+    const renderItems = useCallback(({item}) => {
+        return (
+            <ListItem
+                key={item.id}
+                title={`#${item.id} - ${item.first_name} ${item.last_name} - ${moment().diff(item.dob, 'years')} years old - ${item.gender}`}
+                onPress={() => overlayHandler(item.id)}
+                titleStyle={item.status === 'inactive' ? styles.listItemInactive : null}
+                bottomDivider
+            />
+        )
+    }, []);
 
-const renderItems = useCallback(({item}) => {
-    return (
-        <ListItem
-            key={item.id}
-            title={`#${item.id} - ${item.first_name} ${item.last_name} - ${moment().diff(item.dob, 'years')} years old - ${item.gender}`}
-            onPress={() => overlayHandler(item.id)}
-            titleStyle={item.status === 'inactive' ? styles.listItemInactive : null}
-            bottomDivider
-        />
-    )
-}, []);
+    if (loading) {
+        return (
+            <ErrorBoundary>
+                <View style={styles.error}>
+                    <ActivityIndicator/>
+                </View>
+            </ErrorBoundary>
+        )
 
-if (loading) {
+    }
+
     return (
         <ErrorBoundary>
-            <View style={styles.error}>
-                <ActivityIndicator/>
+            <View style={styles.container}>
+                <OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={setFilterByID}/>
+                <View style={styles.filterStyles}>
+                    <GenderPicker currentItem={gender} pickeItems={pickeItems} genderFilterFunction={setGenderFilter}/>
+                    <Text style={styles.text}>Age From</Text>
+                    <TextInput keyboardType={'numeric'} placeholder={'From'}
+                               onChangeText={text => setAgeFilter(text, 'from')}
+                               maxLength={2} value={age.from}
+                               style={styles.textInput}/>
+                    <Text style={styles.text}>To</Text>
+                    <TextInput keyboardType={'numeric'} placeholder={'To'}
+                               onChangeText={text => setAgeFilter(text, 'to')}
+                               maxLength={2} value={age.to}
+                               style={styles.textInput}/>
+                    <Button title={'Reset'} onPress={handleReset}/>
+                </View>
+                <FlatList
+                    style={styles.list}
+                    data={sortedData}
+                    renderItem={renderItems}
+                    keyExtractor={item => item.id}
+                    ListHeaderComponent={<SearchBar
+                        placeholder="Type Here..."
+                        lightTheme
+                        round
+                        onChangeText={setSearchFilter}
+                        autoCorrect={false}
+                        value={searchValue}
+                    />}
+                />
             </View>
         </ErrorBoundary>
-    )
-
-}
-
-return (
-    <ErrorBoundary>
-        <View style={styles.container}>
-            <OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={setFilterByID}/>
-            <View style={styles.filterStyles}>
-                <GenderPicker currentItem={gender} pickeItems={pickeItems} genderFilterFunction={setGenderFilter}/>
-                <Text style={styles.text}>Age From</Text>
-                <TextInput keyboardType={'numeric'} placeholder={'From'}
-                           onChangeText={text => setAgeFilter(text, 'from')}
-                           maxLength={2} value={age.from}
-                           style={styles.textInput}/>
-                <Text style={styles.text}>To</Text>
-                <TextInput keyboardType={'numeric'} placeholder={'To'}
-                           onChangeText={text => setAgeFilter(text, 'to')}
-                           maxLength={2} value={age.to}
-                           style={styles.textInput}/>
-                <Button title={'Reset'} onPress={handleReset}/>
-            </View>
-            <FlatList
-                style={styles.list}
-                data={sortedData}
-                renderItem={renderItems}
-                keyExtractor={item => item.id}
-                ListHeaderComponent={<SearchBar
-                    placeholder="Type Here..."
-                    lightTheme
-                    round
-                    onChangeText={setSearchFilter}
-                    autoCorrect={false}
-                    value={searchValue}
-                />}
-            />
-        </View>
-    </ErrorBoundary>
-);
+    );
 }
 
 const styles = StyleSheet.create({
