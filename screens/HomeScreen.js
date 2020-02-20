@@ -66,35 +66,18 @@ export default function HomeScreen(deps) {
     }, []);
 
     useEffect(() => {
-        console.log(age.to)
         const searchRegex = searchValue && new RegExp(`${searchValue}`, "gi");
         const result = initialData.filter(
             person => {
-                console.log(moment().diff(person.dob, 'years'))
                 return (!searchRegex || searchRegex.test(person.first_name) || searchRegex.test(person.last_name)) &&
                 (!gender || person.gender === gender) &&
-                // (age.from <= moment().diff(person.dob, 'years')) &&
+                (age.from <= moment().diff(person.dob, 'years')) &&
                 (age.to >= moment().diff(person.dob, 'years'))}
         );
         setSortedData(result);
     }, [searchValue, gender, age]);
 
     const emulateServerDelayWithMemo = (handler, deps) => useCallback(() => setTimeout(handler, 400), [...deps]);
-
-    const setSearchFilter = (text) => {
-        if (text.length >= 2) {
-            const newData = initialData.filter(item => {
-                const itemFNData = `${item.first_name.toUpperCase()}`;
-                const itemLNData = `${item.last_name.toUpperCase()}`;
-                const textData = text.toUpperCase();
-                return (itemFNData.indexOf(textData) > -1) || (itemLNData.indexOf(textData) > -1)
-            });
-            setSortedData(newData);
-        } else {
-            setSortedData(initialData);
-        }
-        setSearchValue(text);
-    };
 
     const setFilterByID = id => {
         const newData = initialData.filter(item => (
@@ -103,19 +86,6 @@ export default function HomeScreen(deps) {
         setinitialData(newData);
         setSortedData(newData);
     };
-
-    const setGenderFilter = gender => {
-        console.log(gender)
-        setGender(gender);
-        // if (gender !== 'both') {
-        //     const newData = initialData.filter(item => (
-        //         item.gender === gender
-        //     ));
-        //     setSortedData(newData)
-        // } else {
-        //     setSortedData(initialData)
-        // }
-    }
 
     const setAgeFilter = (text, index) => {
         // console.log(text, index)
@@ -145,7 +115,7 @@ export default function HomeScreen(deps) {
     };
 
     const handleReset = () => {
-        setGender('both');
+        setGender('');
         setSortedData(initialData);
         setSearchValue('');
         setAge({
@@ -183,7 +153,7 @@ export default function HomeScreen(deps) {
             <View style={styles.container}>
                 <OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={setFilterByID}/>
                 <View style={styles.filterStyles}>
-                    <GenderPicker currentItem={gender} pickeItems={pickeItems} genderFilterFunction={setGenderFilter}/>
+                    <GenderPicker currentItem={gender} pickeItems={pickeItems} setGender={setGender}/>
                     <Text style={styles.text}>Age From</Text>
                     <TextInput keyboardType={'numeric'} placeholder={'From'}
                                onChangeText={text => setAgeFilter(text, 'from')}
@@ -205,7 +175,7 @@ export default function HomeScreen(deps) {
                         placeholder="Type Here..."
                         lightTheme
                         round
-                        onChangeText={setSearchFilter}
+                        onChangeText={setSearchValue}
                         autoCorrect={false}
                         value={searchValue}
                     />}
