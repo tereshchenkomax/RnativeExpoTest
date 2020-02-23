@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {ActivityIndicator, FlatList, StyleSheet, View, TextInput, Button, Keyboard, Text} from 'react-native';
+import {ActivityIndicator, FlatList, StyleSheet, View, TextInput, Button, Keyboard, Text, SectionList} from 'react-native';
 import {ListItem, SearchBar, Overlay} from 'react-native-elements';
 import axios from 'axios';
 import moment from 'moment';
@@ -54,7 +54,7 @@ export default function HomeScreen(deps) {
         fetchData()
             .then(({data}) => {
                 isLoading(false);
-                setSortedData(data.result);
+                setSortedData(data.result.sort((a, b) => a.first_name.localeCompare(b.first_name)));
                 setinitialData(data.result);
             })
             .catch(err => {
@@ -88,21 +88,6 @@ export default function HomeScreen(deps) {
     };
 
     const setAgeFilter = (text, index) => {
-        // console.log(text, index)
-        // if (text !== '') {
-        //     const newData = initialData.filter(item => {
-        //         const dob = moment().diff(item.dob, 'years');
-        //         if (index === 'from') {
-        //             return dob >= text && dob <= age.to
-        //         }
-        //         return dob <= text && dob >= age.from
-        //     });
-        //     setSortedData(newData)
-        // } else {
-        //     setSortedData(initialData)
-        // }
-        // ;
-
         index === 'from' ?
             setAge({
                 from: text,
@@ -166,6 +151,15 @@ export default function HomeScreen(deps) {
                                style={styles.textInput}/>
                     <Button title={'Reset'} onPress={handleReset}/>
                 </View>
+                <SectionList
+                    sections={[
+                        {title: 'D', data: ['Devin', 'Dan', 'Dominic']},
+                        {title: 'J', data: ['Jackson', 'James', 'Jillian', 'Jimmy', 'Joel', 'John', 'Julie']},
+                    ]}
+                    renderItem={({item}) => <Text style={styles.item}>{item}</Text>}
+                    renderSectionHeader={({section}) => <Text >{section.title}</Text>}
+                    keyExtractor={(item, index) => index}
+                />
                 <FlatList
                     style={styles.list}
                     data={sortedData}
@@ -180,6 +174,7 @@ export default function HomeScreen(deps) {
                         value={searchValue}
                     />}
                 />
+
             </View>
         </ErrorBoundary>
     );
@@ -199,7 +194,7 @@ const styles = StyleSheet.create({
         paddingTop: 7
     },
     list: {
-        marginTop: 100
+        marginTop: 20
     },
     picker: {
         height: 15,
