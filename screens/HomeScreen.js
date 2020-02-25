@@ -1,11 +1,14 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {ActivityIndicator, FlatList, StyleSheet, View, TextInput, Button, Keyboard, Text, SectionList} from 'react-native';
 import {ListItem, SearchBar, Overlay} from 'react-native-elements';
+import SectionListContacts from 'react-native-sectionlist-contacts'
+
 import axios from 'axios';
 import moment from 'moment';
 import ErrorBoundary from "../components/ErrorBoundary";
 import GenderPicker from "../components/GenderPicker";
 import OverlayComponent from "../components/OverlayComponent";
+import Example from "../components/Example";
 
 const pickeItems = [
     {label: 'male', value: 'male', key: 1},
@@ -134,7 +137,7 @@ export default function HomeScreen(deps) {
     }
 
     return (
-        <ErrorBoundary>
+        // <ErrorBoundary>
             <View style={styles.container}>
                 <OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={setFilterByID}/>
                 <View style={styles.filterStyles}>
@@ -151,32 +154,35 @@ export default function HomeScreen(deps) {
                                style={styles.textInput}/>
                     <Button title={'Reset'} onPress={handleReset}/>
                 </View>
-                <SectionList
-                    sections={[
-                        {title: 'D', data: ['Devin', 'Dan', 'Dominic']},
-                        {title: 'J', data: ['Jackson', 'James', 'Jillian', 'Jimmy', 'Joel', 'John', 'Julie']},
-                    ]}
-                    renderItem={({item}) => <Text style={styles.item}>{item}</Text>}
-                    renderSectionHeader={({section}) => <Text >{section.title}</Text>}
-                    keyExtractor={(item, index) => index}
-                />
-                <FlatList
-                    style={styles.list}
-                    data={sortedData}
-                    renderItem={renderItems}
-                    keyExtractor={item => item.id}
-                    ListHeaderComponent={<SearchBar
-                        placeholder="Type Here..."
-                        lightTheme
-                        round
-                        onChangeText={setSearchValue}
-                        autoCorrect={false}
-                        value={searchValue}
-                    />}
-                />
-
+                {/*<SectionList*/}
+                {/*    sections={[*/}
+                {/*        {title: 'D', data: ['Devin', 'Dan', 'Dominic']},*/}
+                {/*        {title: 'J', data: ['Jackson', 'James', 'Jillian', 'Jimmy', 'Joel', 'John', 'Julie']},*/}
+                {/*    ]}*/}
+                {/*    renderItem={({item}) => <Text style={styles.item}>{item}</Text>}*/}
+                {/*    renderSectionHeader={({section}) => <Text >{section.title}</Text>}*/}
+                {/*    keyExtractor={(item, index) => index}*/}
+                {/*/>*/}
+                {/*<FlatList*/}
+                {/*    style={styles.list}*/}
+                {/*    data={sortedData}*/}
+                {/*    renderItem={renderItems}*/}
+                {/*    keyExtractor={item => item.id}*/}
+                {/*    ListHeaderComponent={<SearchBar*/}
+                {/*        placeholder="Type Here..."*/}
+                {/*        lightTheme*/}
+                {/*        round*/}
+                {/*        onChangeText={setSearchValue}*/}
+                {/*        autoCorrect={false}*/}
+                {/*        value={searchValue}*/}
+                {/*    />}*/}
+                {/*<SectionListContacts*/}
+                {/*    sectionListData={sortedData}*/}
+                {/*        renderItem={renderItems}*/}
+                {/*/>*/}
+                <Example data={sortedData} />
             </View>
-        </ErrorBoundary>
+        // {/*</ErrorBoundary>*/}
     );
 }
 
