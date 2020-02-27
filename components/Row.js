@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import moment from "moment";
 
 const styles = StyleSheet.create({
 	container: {
@@ -19,10 +20,10 @@ const styles = StyleSheet.create({
 	},
 });
 
-const Row = (props) => (
+const Row = ({item, overlayHandler}) => (
 	<View style={styles.container}>
-		<Text style={styles.text}>
-			{`${props.name.first} ${props.name.last}`}
+		<Text style={styles.text} onPress={() => overlayHandler(item.id)}>
+			{item.id} - {item.first_name} {item.last_name} - {moment().diff(item.dob, 'years')} years old - {item.gender}
 		</Text>
 	</View>
 );

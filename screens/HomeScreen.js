@@ -17,7 +17,7 @@ import moment from 'moment';
 import ErrorBoundary from "../components/ErrorBoundary";
 import GenderPicker from "../components/GenderPicker";
 import OverlayComponent from "../components/OverlayComponent";
-import List from "../components/List";
+import {List} from "../components/List";
 
 const pickeItems = [
 	{label: 'male', value: 'male', key: 1},
@@ -125,18 +125,6 @@ export default function HomeScreen(deps) {
 		Keyboard.dismiss();
 	};
 
-	const renderItems = useCallback(({item}) => {
-		return (
-			<ListItem
-				key={item.id}
-				title={`#${item.id} - ${item.first_name} ${item.last_name} - ${moment().diff(item.dob, 'years')} years old - ${item.gender}`}
-				onPress={() => overlayHandler(item.id)}
-				titleStyle={item.status === 'inactive' ? styles.listItemInactive : null}
-				bottomDivider
-			/>
-		)
-	}, []);
-
 	if (loading) {
 		return (
 			<ErrorBoundary>
@@ -166,25 +154,7 @@ export default function HomeScreen(deps) {
 							   style={styles.textInput}/>
 					<Button title={'Reset'} onPress={handleReset}/>
 				</View>
-
-				{/*<FlatList*/}
-				{/*    style={styles.list}*/}
-				{/*    data={sortedData}*/}
-				{/*    renderItem={renderItems}*/}
-				{/*    keyExtractor={item => item.id}*/}
-				{/*    ListHeaderComponent={<SearchBar*/}
-				{/*        placeholder="Type Here..."*/}
-				{/*        lightTheme*/}
-				{/*        round*/}
-				{/*        onChangeText={setSearchValue}*/}
-				{/*        autoCorrect={false}*/}
-				{/*        value={searchValue}*/}
-				{/*    />}*/}
-				{/*<SectionListContacts*/}
-				{/*    sectionListData={sortedData}*/}
-				{/*        renderItem={renderItems}*/}
-				{/*/>*/}
-				<List data={sortedData}/>
+				<List data={sortedData} overlayHandler={overlayHandler}/>
 			</View>
 		</ErrorBoundary>
 	);
