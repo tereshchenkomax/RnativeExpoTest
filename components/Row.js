@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 const Row = ({item, overlayHandler}) => (
 	<View style={styles.container}>
 		<Text style={styles.text} onPress={() => overlayHandler(item.id)}>
-			{item.id} - {item.first_name} {item.last_name} - {moment().diff(item.dob, 'years')} years old - {item.gender}
+			#{item.id} - {item.first_name} {item.last_name} - {moment().diff(item.dob, 'years')} years old - {item.gender}
 		</Text>
 	</View>
 );

@@ -2,11 +2,16 @@ import React from 'react';
 import {Picker, StyleSheet} from "react-native";
 
 const GenderPicker = ({currentItem, pickeItems, setGender}) => {
+
+    const genderHandler = (gender) => {
+        setGender(gender)
+    };
+
     return (
         <Picker
             selectedValue={currentItem}
             style={styles.picker}
-            onValueChange={setGender}
+            onValueChange={genderHandler}
         >
             {pickeItems && pickeItems[0].value && pickeItems.map(item => {
                 return (

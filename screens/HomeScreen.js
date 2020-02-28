@@ -1,16 +1,13 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
 	ActivityIndicator,
-	FlatList,
 	StyleSheet,
 	View,
 	TextInput,
 	Button,
 	Keyboard,
 	Text,
-	SectionList
 } from 'react-native';
-import {ListItem, SearchBar, Overlay} from 'react-native-elements';
 
 import axios from 'axios';
 import moment from 'moment';
@@ -18,12 +15,9 @@ import ErrorBoundary from "../components/ErrorBoundary";
 import GenderPicker from "../components/GenderPicker";
 import OverlayComponent from "../components/OverlayComponent";
 import {List} from "../components/List";
-
-const pickeItems = [
-	{label: 'male', value: 'male', key: 1},
-	{label: 'female', value: 'female', key: 2},
-	{label: 'both', value: '', key: 3},
-]
+import {pickeritems} from "../data/pickeritems"
+import {fetchData} from "../utils/fetchdata";
+import dismissKeyboard from "react-native-web/dist/modules/dismissKeyboard";
 
 export default function HomeScreen(deps) {
 
@@ -45,18 +39,10 @@ export default function HomeScreen(deps) {
 	const [error, setError] = useState(false);
 	const [loading, isLoading] = useState(false);
 
-	const fetchData = async () => {
-		try {
-			let url = 'https://gorest.co.in/public-api/users?_format=json&access-token=xAj8EbuOqdkAvS_0kSRv49F0YrRO8skgwSh4';
-			return await axios.get(url)
-		} catch (error) {
-			setError(error);
-		}
-	};
-
 	useEffect(() => {
 		isLoading(true);
-		fetchData()
+		const url = 'https://gorest.co.in/public-api/users?_format=json&access-token=xAj8EbuOqdkAvS_0kSRv49F0YrRO8skgwSh4';
+		fetchData(url)
 			.then(({data}) => {
 				isLoading(false);
 				setSortedData(data.result.sort((a, b) => a.first_name.localeCompare(b.first_name)));
@@ -81,7 +67,7 @@ export default function HomeScreen(deps) {
 					(age.to >= moment().diff(person.dob, 'years'))
 			}
 		);
-		setSortedData(result);
+		setTimeout(() => setSortedData(result), 400);
 		isLoading(false);
 	}, [searchValue, gender, age]);
 
@@ -125,6 +111,10 @@ export default function HomeScreen(deps) {
 		Keyboard.dismiss();
 	};
 
+	const handleSearch = (text) => {
+		setSearchValue(text)
+	}
+
 	if (loading) {
 		return (
 			<ErrorBoundary>
@@ -140,8 +130,8 @@ export default function HomeScreen(deps) {
 		<ErrorBoundary>
 			<View style={styles.container}>
 				<OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={setFilterByID}/>
-				<View style={styles.filterStyles}>
-					<GenderPicker currentItem={gender} pickeItems={pickeItems} setGender={setGender}/>
+				<View style={styles.filterStyles} >
+					<GenderPicker currentItem={gender} pickeItems={pickeritems} setGender={setGender}/>
 					<Text style={styles.text}>Age From</Text>
 					<TextInput keyboardType={'numeric'} placeholder={'From'}
 							   onChangeText={text => setAgeFilter(text, 'from')}
@@ -154,31 +144,19 @@ export default function HomeScreen(deps) {
 							   style={styles.textInput}/>
 					<Button title={'Reset'} onPress={handleReset}/>
 				</View>
-				<List data={sortedData} overlayHandler={overlayHandler}/>
+				<List data={sortedData} overlayHandler={overlayHandler} handleSearch={handleSearch}/>
 			</View>
 		</ErrorBoundary>
 	);
 }
 
 const styles = StyleSheet.create({
-	error: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center'
-	},
 	container: {
 		flex: 1
 	},
 	text: {
 		fontSize: 20,
 		paddingTop: 7
-	},
-	list: {
-		marginTop: 20
-	},
-	picker: {
-		height: 15,
-		width: 100
 	},
 	textInput: {
 		width: 50,

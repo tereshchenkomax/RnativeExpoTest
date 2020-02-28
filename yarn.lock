@@ -3270,7 +3270,7 @@ lodash.throttle@^4.1.1:
   resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
   integrity sha1-wj6RtxAkKscMN/HhzaknTMOb8vQ=
 
-lodash@^4.0.0, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.0:
+lodash@^4.0.0, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.0:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -4280,11 +4280,6 @@ react-native-elements@^1.2.7:
     react-native-ratings "^6.3.0"
     react-native-status-bar-height "^2.2.0"
 
-react-native-error-boundary@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-error-boundary/-/react-native-error-boundary-1.0.3.tgz#de5cdfa27e3fdfd3e56debb866b14ddf0f173ffc"
-  integrity sha512-m2TYjscsZxsWStllEfZ2CTuQ7TSGtjmnMmrS7vlxY1Udfr/ICgwCSw3XQlZJNf9bNkU4NoKh28AaAc1MW+o3LA==
-
 react-native-gesture-handler@~1.5.0:
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.5.3.tgz#191b44701fab7ba54c27a2438cb5eaa252666e66"
@@ -4338,6 +4333,13 @@ react-native-screens@2.0.0-alpha.12:
   integrity sha512-tOxHGQUN83MTmQB4ghoQkibqOdGiX4JQEmeyEv96MKWO/x8T2PJv84ECUos9hD3blPRQwVwSpAid1PPPhrVEaw==
   dependencies:
     debounce "^1.2.0"
+
+react-native-sectionlist-contacts@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/react-native-sectionlist-contacts/-/react-native-sectionlist-contacts-1.1.3.tgz#da200e1fa9667082e9418929087e0d807ea8eee8"
+  integrity sha512-CG7UPDQz+QoYZPGhDhJ/VCArU7B3LRo5Ac6qnr7NI3oPzJGQR5fX7ZkbS9OrFeIH2G5lxQ3xGpVUvFIJelgrFQ==
+  dependencies:
+    lodash "^4.17.11"
 
 react-native-status-bar-height@^2.2.0:
   version "2.4.0"

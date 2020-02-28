@@ -1,5 +1,6 @@
 import React from 'react'
 import FallbackComponent from "./FallbackComponent";
+import {StyleSheet} from "react-native";
 
 export default class ErrorBoundary extends React.Component {
     state = { hasError: false };

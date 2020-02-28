@@ -1,9 +1,10 @@
 import React, {useEffect, useState, Fragment} from 'react';
 import {View, SectionList, StyleSheet, Text} from 'react-native';
 import Row from './Row'
+import SearchHeader from './SearchHeader'
 import SectionHeader from './SectionHeader';
 
-export const List = ({data, overlayHandler}) => {
+export const List = ({data, overlayHandler, handleSearch}) => {
 
 	const [sections, setSections] = useState([])
 
@@ -51,6 +52,7 @@ export const List = ({data, overlayHandler}) => {
 				sections={sections}
 				renderItem={renderItem}
 				renderSectionHeader={(sectionData) => <SectionHeader {...sectionData} />}
+				ListHeaderComponent={<SearchHeader handleSearch={handleSearch} />}
 				ItemSeparatorComponent={(sectionId, rowId) => <View key={rowId} style={styles.separator}/>}
 				keyExtractor={(item, index) => index}
 			/>
