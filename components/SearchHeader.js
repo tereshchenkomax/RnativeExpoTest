@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 
-const Header = ({handleSearch}) => (
+const Header = ({searchValue, handleSearch}) => (
 	<View style={styles.container}>
 		<TextInput
+			value={searchValue}
 			style={styles.input}
 			placeholder="Search..."
 			onChangeText={(text) => handleSearch(text)}

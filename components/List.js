@@ -4,7 +4,7 @@ import Row from './Row'
 import SearchHeader from './SearchHeader'
 import SectionHeader from './SectionHeader';
 
-export const List = ({data, overlayHandler, handleSearch}) => {
+export const List = ({searchValue, data, overlayHandler, handleSearch}) => {
 
 	const [sections, setSections] = useState([])
 
@@ -33,6 +33,10 @@ export const List = ({data, overlayHandler, handleSearch}) => {
 		return dataBlob
 	}
 
+	const renderHeader = (sectionData) => <SectionHeader {...sectionData} />
+
+	const renderSeparator = (sectionId, rowId) => <View key={rowId} style={styles.separator}/>
+
 	const renderItem = ({item}) => {
 		return (
 			<Row
@@ -52,8 +56,8 @@ export const List = ({data, overlayHandler, handleSearch}) => {
 				sections={sections}
 				renderItem={renderItem}
 				renderSectionHeader={(sectionData) => <SectionHeader {...sectionData} />}
-				ListHeaderComponent={<SearchHeader handleSearch={handleSearch} />}
-				ItemSeparatorComponent={(sectionId, rowId) => <View key={rowId} style={styles.separator}/>}
+				ListHeaderComponent={<SearchHeader handleSearch={handleSearch} searchValue={searchValue}/>}
+				ItemSeparatorComponent={renderSeparator}
 				keyExtractor={(item, index) => index}
 			/>
 		</Fragment>

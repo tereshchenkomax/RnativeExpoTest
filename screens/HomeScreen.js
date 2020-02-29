@@ -18,6 +18,7 @@ import {List} from "../components/List";
 import {pickeritems} from "../data/pickeritems"
 import {fetchData} from "../utils/fetchdata";
 import dismissKeyboard from "react-native-web/dist/modules/dismissKeyboard";
+import {AgeFilter} from "../components/AgeFilter";
 
 export default function HomeScreen(deps) {
 
@@ -61,7 +62,10 @@ export default function HomeScreen(deps) {
 		const searchRegex = searchValue && new RegExp(`${searchValue}`, "gi");
 		const result = initialData.filter(
 			person => {
-				return (!searchRegex || searchRegex.test(person.first_name) || searchRegex.test(person.last_name)) &&
+				return (!searchRegex ||
+					searchValue.length <= 2 ||
+					searchRegex.test(person.first_name) ||
+					searchRegex.test(person.last_name)) &&
 					(!gender || person.gender === gender) &&
 					(age.from <= moment().diff(person.dob, 'years')) &&
 					(age.to >= moment().diff(person.dob, 'years'))
@@ -71,8 +75,6 @@ export default function HomeScreen(deps) {
 		isLoading(false);
 	}, [searchValue, gender, age]);
 
-	const emulateServerDelayWithMemo = (handler, deps) => useCallback(() => setTimeout(handler, 400), [...deps]);
-
 	const overlayHandler = (id) => {
 		setVisibleOverlay({
 			visible: true,
@@ -80,7 +82,7 @@ export default function HomeScreen(deps) {
 		});
 	};
 
-	const setFilterByID = id => {
+	const filterByID = id => {
 		const newData = initialData.filter(item => (
 			item.id !== id
 		));
@@ -88,7 +90,7 @@ export default function HomeScreen(deps) {
 		setSortedData(newData);
 	};
 
-	const setAgeFilter = (text, index) => {
+	const ageFilter = (text, index) => {
 		index === 'from' ?
 			setAge({
 				from: text,
@@ -129,22 +131,12 @@ export default function HomeScreen(deps) {
 	return (
 		<ErrorBoundary>
 			<View style={styles.container}>
-				<OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={setFilterByID}/>
+				<OverlayComponent overlay={overlay} setVisibleOverlay={setVisibleOverlay} filterById={filterByID}/>
 				<View style={styles.filterStyles} >
 					<GenderPicker currentItem={gender} pickeItems={pickeritems} setGender={setGender}/>
-					<Text style={styles.text}>Age From</Text>
-					<TextInput keyboardType={'numeric'} placeholder={'From'}
-							   onChangeText={text => setAgeFilter(text, 'from')}
-							   maxLength={2} value={age.from}
-							   style={styles.textInput}/>
-					<Text style={styles.text}>To</Text>
-					<TextInput keyboardType={'numeric'} placeholder={'To'}
-							   onChangeText={text => setAgeFilter(text, 'to')}
-							   maxLength={2} value={age.to}
-							   style={styles.textInput}/>
-					<Button title={'Reset'} onPress={handleReset}/>
+					<AgeFilter age={age} ageFilter={ageFilter} reset={handleReset} />
 				</View>
-				<List data={sortedData} overlayHandler={overlayHandler} handleSearch={handleSearch}/>
+				<List searchValue={searchValue} data={sortedData} overlayHandler={overlayHandler} handleSearch={handleSearch}/>
 			</View>
 		</ErrorBoundary>
 	);
@@ -153,18 +145,6 @@ export default function HomeScreen(deps) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1
-	},
-	text: {
-		fontSize: 20,
-		paddingTop: 7
-	},
-	textInput: {
-		width: 50,
-		fontSize: 20,
-		color: 'blue',
-		borderWidth: 1,
-		borderColor: 'gray',
-		textAlign: 'center'
 	},
 	listItemInactive: {
 		color: 'gray'
