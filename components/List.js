@@ -1,5 +1,5 @@
 import React, {useEffect, useState, Fragment} from 'react';
-import {View, SectionList, StyleSheet, Text} from 'react-native';
+import {View, SectionList, StyleSheet} from 'react-native';
 import Row from './Row'
 import SearchHeader from './SearchHeader'
 import SectionHeader from './SectionHeader';
@@ -33,7 +33,7 @@ export const List = ({searchValue, data, overlayHandler, handleSearch}) => {
 		return dataBlob
 	}
 
-	const renderHeader = (sectionData) => <SectionHeader {...sectionData} />
+	const renderSectionHeader = (sectionData) => <SectionHeader {...sectionData} />
 
 	const renderSeparator = (sectionId, rowId) => <View key={rowId} style={styles.separator}/>
 
@@ -55,7 +55,7 @@ export const List = ({searchValue, data, overlayHandler, handleSearch}) => {
 				style={styles.container}
 				sections={sections}
 				renderItem={renderItem}
-				renderSectionHeader={(sectionData) => <SectionHeader {...sectionData} />}
+				renderSectionHeader={renderSectionHeader}
 				ListHeaderComponent={<SearchHeader handleSearch={handleSearch} searchValue={searchValue}/>}
 				ItemSeparatorComponent={renderSeparator}
 				keyExtractor={(item, index) => index}

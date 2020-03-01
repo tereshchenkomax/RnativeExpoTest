@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Button, Text, StyleSheet, View, TouchableOpacity} from "react-native";
+import {Text, StyleSheet, View, TouchableOpacity} from "react-native";
 import {Overlay} from "react-native-elements";
 
 function OverlayComponent({overlay, setVisibleOverlay, filterById}) {

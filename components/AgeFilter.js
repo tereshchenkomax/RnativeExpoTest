@@ -5,16 +5,22 @@ export const AgeFilter = ({age, ageFilter, reset}) => {
     return (
         <View style={styles.ageFilter}>
             <Text style={styles.text}>Age From</Text>
-            <TextInput keyboardType={'numeric'} placeholder={'From'}
+            <TextInput keyboardType={'numeric'}
+                       placeholder={'From'}
                        onChangeText={text => ageFilter(text, 'from')}
                        maxLength={2} value={age.from}
                        style={styles.textInput}/>
             <Text style={styles.text}>To</Text>
-            <TextInput keyboardType={'numeric'} placeholder={'To'}
+            <TextInput keyboardType={'numeric'}
+                       placeholder={'To'}
                        onChangeText={text => ageFilter(text, 'to')}
-                       maxLength={2} value={age.to}
+                       maxLength={2}
+                       value={age.to}
                        style={styles.textInput}/>
-            <Button title={'Reset'} onPress={reset}/>
+            <Button
+                title={'Reset'}
+                onPress={reset}
+            />
         </View>
     );
 };
